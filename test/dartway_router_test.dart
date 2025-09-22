@@ -86,60 +86,62 @@ void main() {
 
   group('NavigationParamsMixin', () {
     test('should parse int values correctly', () {
-      final params = {'id': '123'};
-      final value = TestRoutes.userDetail.get(params);
+      final params = {'userId': '123'};
+      final value = AppNavigationParams.userId.get(params);
       expect(value, equals(123));
     });
 
     test('should parse string values correctly', () {
-      final params = {'name': 'John'};
-      final value = TestStringRoutes.userName.get(params);
+      final params = {'userName': 'John'};
+      final value = AppNavigationParams.userName.get(params) as String;
       expect(value, equals('John'));
     });
 
     test('should parse double values correctly', () {
       final params = {'price': '19.99'};
-      final value = TestDoubleRoutes.price.get(params);
+      final value = AppNavigationParams.price.get(params) as double;
       expect(value, equals(19.99));
     });
 
     test('should parse bool values correctly', () {
       final params = {'enabled': 'true'};
-      final value = TestBoolRoutes.enabled.get(params);
+      final value = AppNavigationParams.enabled.get(params) as bool;
       expect(value, equals(true));
     });
 
     test('should return null for missing parameters', () {
       final params = <String, String>{};
-      final value = TestRoutes.userDetail.get(params);
+      final value = AppNavigationParams.userId.get(params);
       expect(value, isNull);
     });
 
     test('should return default value', () {
       final params = <String, String>{};
-      final value = TestRoutes.userDetail.getOrDefault(params, 0);
+      final value = AppNavigationParams.userId.getOrDefault(params, 0);
       expect(value, equals(0));
     });
 
     test('should throw FormatException for invalid int values', () {
-      final params = {'id': 'invalid'};
-      expect(() => TestRoutes.userDetail.get(params), throwsFormatException);
+      final params = {'userId': 'invalid'};
+      expect(
+          () => AppNavigationParams.userId.get(params), throwsFormatException);
     });
 
     test('should throw FormatException for invalid double values', () {
       final params = {'price': 'invalid'};
-      expect(() => TestDoubleRoutes.price.get(params), throwsFormatException);
+      expect(
+          () => AppNavigationParams.price.get(params), throwsFormatException);
     });
 
     test('should return default value on parse error with getOrDefault', () {
-      final params = {'id': 'invalid'};
-      final value = TestRoutes.userDetail.getOrDefault(params, 0);
+      final params = {'userId': 'invalid'};
+      final value = AppNavigationParams.userId.getOrDefault(params, 0);
       expect(value, equals(0));
     });
 
     test('should set parameter values correctly', () {
-      final result = TestRoutes.userDetail.set(123);
-      expect(result, equals({'userDetail': '123'}));
+      final result = AppNavigationParams.userId.set(123);
+      expect(result, equals({'userId': '123'}));
     });
   });
 
@@ -161,94 +163,51 @@ void main() {
 
     test('should generate correct full path', () {
       expect(TestRoutes.home.fullPath, equals('/home'));
-      expect(TestRoutes.userDetail.fullPath, equals('/user/:userDetail'));
+      expect(TestRoutes.userDetail.fullPath, equals('/user/:userId'));
     });
   });
 }
 
 // Test route enums
-enum TestRoutes with NavigationParamsMixin<int> implements NavigationZoneRoute {
-  home,
-  profile,
-  userDetail;
-
-  @override
-  String get root => '';
-
-  @override
-  NavigationRouteDescriptor get descriptor {
-    switch (this) {
-      case TestRoutes.home:
-        return SimpleNavigationRouteDescriptor(page: const TestPage('Home'));
-      case TestRoutes.profile:
-        return SimpleNavigationRouteDescriptor(page: const TestPage('Profile'));
-      case TestRoutes.userDetail:
-        return ParameterizedNavigationRouteDescriptor(
-          page: const TestPage('User Detail'),
-          parameter: this,
-        );
-    }
-  }
+// Navigation parameters enum - single generic enum for all types
+enum AppNavigationParams<T> with NavigationParamsMixin<T> {
+  userId<int>(), // int
+  userName<String>(), // String
+  price<double>(), // double
+  enabled<bool>(), // bool
 }
 
-enum TestStringRoutes
-    with NavigationParamsMixin<String>
-    implements NavigationZoneRoute {
-  userName;
+// Navigation routes enum - clean separation from parameters
+enum TestRoutes implements NavigationZoneRoute {
+  home(SimpleNavigationRouteDescriptor(page: TestPage('Home'))),
+  profile(SimpleNavigationRouteDescriptor(page: TestPage('Profile'))),
+  user(SimpleNavigationRouteDescriptor(page: TestPage('User'))),
+  userDetail(ParameterizedNavigationRouteDescriptor(
+    page: TestPage('User Detail'),
+    parameter: AppNavigationParams.userId,
+    parent: TestRoutes.user, // Make userDetail a child of user
+  )),
+  userName(ParameterizedNavigationRouteDescriptor(
+    page: TestPage('User Name'),
+    parameter: AppNavigationParams.userName,
+    parent: TestRoutes.user, // Make userName a child of user
+  )),
+  price(ParameterizedNavigationRouteDescriptor(
+    page: TestPage('Price'),
+    parameter: AppNavigationParams.price,
+  )),
+  enabled(ParameterizedNavigationRouteDescriptor(
+    page: TestPage('Enabled'),
+    parameter: AppNavigationParams.enabled,
+  ));
+
+  const TestRoutes(this.descriptor);
+
+  @override
+  final NavigationRouteDescriptor descriptor;
 
   @override
   String get root => '';
-
-  @override
-  NavigationRouteDescriptor get descriptor {
-    switch (this) {
-      case TestStringRoutes.userName:
-        return ParameterizedNavigationRouteDescriptor(
-          page: const TestPage('User Name'),
-          parameter: this,
-        );
-    }
-  }
-}
-
-enum TestDoubleRoutes
-    with NavigationParamsMixin<double>
-    implements NavigationZoneRoute {
-  price;
-
-  @override
-  String get root => '';
-
-  @override
-  NavigationRouteDescriptor get descriptor {
-    switch (this) {
-      case TestDoubleRoutes.price:
-        return ParameterizedNavigationRouteDescriptor(
-          page: const TestPage('Price'),
-          parameter: this,
-        );
-    }
-  }
-}
-
-enum TestBoolRoutes
-    with NavigationParamsMixin<bool>
-    implements NavigationZoneRoute {
-  enabled;
-
-  @override
-  String get root => '';
-
-  @override
-  NavigationRouteDescriptor get descriptor {
-    switch (this) {
-      case TestBoolRoutes.enabled:
-        return ParameterizedNavigationRouteDescriptor(
-          page: const TestPage('Enabled'),
-          parameter: this,
-        );
-    }
-  }
 }
 
 enum DuplicateTestRoutes
@@ -265,7 +224,10 @@ enum DuplicateTestRoutes
     switch (this) {
       case DuplicateTestRoutes.home1:
       case DuplicateTestRoutes.home2:
-        return SimpleNavigationRouteDescriptor(page: const TestPage('Home'));
+        return TestNavigationRouteDescriptor(
+          page: const TestPage('Home'),
+          path: 'home', // Both routes will have the same path '/home'
+        );
     }
   }
 }
@@ -282,4 +244,13 @@ class TestPage extends StatelessWidget {
       body: Center(child: Text(title)),
     );
   }
+}
+
+// Custom descriptor for testing duplicate routes
+class TestNavigationRouteDescriptor extends NavigationRouteDescriptor {
+  const TestNavigationRouteDescriptor({
+    required super.page,
+    super.path,
+    super.parent,
+  });
 }

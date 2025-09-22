@@ -27,8 +27,10 @@ class HomePage extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () => context.pushTo(AppNavigationZone.userDetail,
-                  pathParameters: AppParams.userId.set(123)),
+              onPressed: () => context.pushTo(
+                AppNavigationZone.userDetail,
+                pathParameters: AppParams.userId.set(123),
+              ),
               child: const Text('View User Detail'),
             ),
             const SizedBox(height: 20),

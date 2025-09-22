@@ -7,6 +7,18 @@ enum AppNavigationZone implements NavigationZoneRoute {
   userDetail(ParameterizedNavigationRouteDescriptor(
     page: UserDetailPage(),
     parameter: AppParams.userId,
+  )),
+  search(ParameterizedNavigationRouteDescriptor(
+    page: UserDetailPage(), // Reusing for demo
+    parameter: AppParams.searchQuery,
+  )),
+  productDetail(ParameterizedNavigationRouteDescriptor(
+    page: UserDetailPage(), // Reusing for demo
+    parameter: AppParams.price,
+  )),
+  featureToggle(ParameterizedNavigationRouteDescriptor(
+    page: UserDetailPage(), // Reusing for demo
+    parameter: AppParams.isEnabled,
   ));
 
   const AppNavigationZone(this.descriptor);

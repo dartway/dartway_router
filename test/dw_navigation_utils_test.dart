@@ -91,7 +91,7 @@ void main() {
         DwMenuItem.custom(
           displayTitle: 'Custom',
           iconData: Icons.settings,
-          onPressed: (ref) {},
+          customOnPressed: (ref) {},
         ),
       ];
 
@@ -126,28 +126,29 @@ void main() {
 }
 
 // Test route enum for navigation utils tests
-enum TestRoutes with NavigationParamsMixin<int> implements NavigationZoneRoute {
-  home,
-  profile,
-  userDetail;
+// Navigation parameters enum - single generic enum for all types
+enum AppNavigationParams<T> with NavigationParamsMixin<T> {
+  userId<int>(), // int
+}
+
+// Navigation routes enum - clean separation from parameters
+enum TestRoutes implements NavigationZoneRoute {
+  home(SimpleNavigationRouteDescriptor(page: TestPage('Home'))),
+  profile(SimpleNavigationRouteDescriptor(page: TestPage('Profile'))),
+  user(SimpleNavigationRouteDescriptor(page: TestPage('User'))),
+  userDetail(ParameterizedNavigationRouteDescriptor(
+    page: TestPage('User Detail'),
+    parameter: AppNavigationParams.userId,
+    parent: TestRoutes.user, // Make userDetail a child of user
+  ));
+
+  const TestRoutes(this.descriptor);
+
+  @override
+  final NavigationRouteDescriptor descriptor;
 
   @override
   String get root => '';
-
-  @override
-  NavigationRouteDescriptor get descriptor {
-    switch (this) {
-      case TestRoutes.home:
-        return SimpleNavigationRouteDescriptor(page: const TestPage('Home'));
-      case TestRoutes.profile:
-        return SimpleNavigationRouteDescriptor(page: const TestPage('Profile'));
-      case TestRoutes.userDetail:
-        return ParameterizedNavigationRouteDescriptor(
-          page: const TestPage('User Detail'),
-          parameter: this,
-        );
-    }
-  }
 }
 
 class TestPage extends StatelessWidget {

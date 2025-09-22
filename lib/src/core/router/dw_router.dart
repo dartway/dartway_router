@@ -216,9 +216,11 @@ class DwRouter {
 
     // Check for invalid route paths
     for (final route in allRoutes) {
-      if (route.routePath.isEmpty || !route.routePath.startsWith('/')) {
+      final pathToCheck =
+          route.descriptor.parent == null ? route.routePath : route.fullPath;
+      if (pathToCheck.isEmpty || !pathToCheck.startsWith('/')) {
         throw ArgumentError(
-            'Invalid route path for ${route.name}: "${route.routePath}". Route paths must start with "/"');
+            'Invalid route path for ${route.name}: "$pathToCheck". Route paths must start with "/"');
       }
     }
   }

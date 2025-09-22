@@ -28,27 +28,23 @@ class NotificationBadge extends ConsumerWidget {
     final badgeColor = this.badgeColor ?? theme.colorScheme.error;
     final textColor = this.textColor ?? theme.colorScheme.onError;
 
-    return Positioned(
-      right: 0,
-      top: 0,
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: badgeColor,
-          borderRadius: BorderRadius.circular(minSize / 2),
+    return Container(
+      padding: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: badgeColor,
+        borderRadius: BorderRadius.circular(minSize / 2),
+      ),
+      constraints: BoxConstraints(
+        minWidth: minSize,
+        minHeight: minSize,
+      ),
+      child: Text(
+        '$count',
+        style: theme.textTheme.labelSmall!.copyWith(
+          color: textColor,
+          fontWeight: FontWeight.w600,
         ),
-        constraints: BoxConstraints(
-          minWidth: minSize,
-          minHeight: minSize,
-        ),
-        child: Text(
-          '$count',
-          style: theme.textTheme.labelSmall!.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

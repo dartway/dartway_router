@@ -84,18 +84,25 @@ class _MainNavigationBarState extends ConsumerState<DwBottomNavigationBar> {
 
     if (!mounted) return;
 
-    final uri = GoRouter.of(context).routerDelegate.currentConfiguration.uri;
-    final currentRoute = uri.toString().split('?')[0];
+    try {
+      final uri = GoRouter.of(context).routerDelegate.currentConfiguration.uri;
+      final currentRoute = uri.toString().split('?')[0];
 
-    // Only recalculate if route actually changed
-    if (_lastRoute != currentRoute) {
-      _lastRoute = currentRoute;
-      _currentIndex = DwNavigationUtils.findMatchingRouteIndex(
-        currentRoute,
-        widget.menuItems,
-      );
+      // Only recalculate if route actually changed
+      if (_lastRoute != currentRoute) {
+        _lastRoute = currentRoute;
+        _currentIndex = DwNavigationUtils.findMatchingRouteIndex(
+          currentRoute,
+          widget.menuItems,
+        );
 
-      // Fallback to first item if no match found or invalid index
+        // Fallback to first item if no match found or invalid index
+        if (_currentIndex == -1 || _currentIndex >= widget.menuItems.length) {
+          _currentIndex = 0;
+        }
+      }
+    } catch (e) {
+      // If GoRouter is not available (e.g., in tests), default to first item
       if (_currentIndex == -1 || _currentIndex >= widget.menuItems.length) {
         _currentIndex = 0;
       }

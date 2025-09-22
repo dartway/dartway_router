@@ -4,7 +4,7 @@ import 'package:dartway_router/dartway_router.dart';
 
 /// A menu item for bottom navigation bar.
 ///
-/// Provides different factory constructors for creating menu items with
+/// Provides different named constructors for creating menu items with
 /// Material icons, SVG icons, or custom actions. Supports badges for
 /// notifications and custom widgets.
 ///
@@ -19,75 +19,41 @@ import 'package:dartway_router/dartway_router.dart';
 /// )
 /// ```
 class DwMenuItem {
-  const DwMenuItem._({
+  /// Create a menu item with Material Design icon
+  const DwMenuItem.icon({
     required this.route,
     required this.displayTitle,
-    this.iconData,
+    required this.iconData,
     this.activeIconData,
-    this.svgIcon,
-    this.activeSvgIcon,
     this.customOnPressed,
-    this.changeIconColor = true,
     this.badge,
-  });
-
-  /// Create a menu item with Material Design icon
-  factory DwMenuItem.icon({
-    required NavigationZoneRoute route,
-    required String displayTitle,
-    required IconData iconData,
-    IconData? activeIconData,
-    Function(WidgetRef)? customOnPressed,
-    Widget? badge,
-  }) {
-    return DwMenuItem._(
-      route: route,
-      displayTitle: displayTitle,
-      iconData: iconData,
-      activeIconData: activeIconData,
-      customOnPressed: customOnPressed,
-      changeIconColor: false,
-      badge: badge,
-    );
-  }
+    this.changeIconColor = false,
+  })  : svgIcon = null,
+        activeSvgIcon = null;
 
   /// Create a menu item with SVG icon
-  factory DwMenuItem.svg({
-    required NavigationZoneRoute route,
-    required String displayTitle,
-    required String svgIcon,
-    String? activeSvgIcon,
-    Function(WidgetRef)? customOnPressed,
-    bool changeIconColor = true,
-    Widget? badge,
-  }) {
-    return DwMenuItem._(
-      route: route,
-      displayTitle: displayTitle,
-      svgIcon: svgIcon,
-      activeSvgIcon: activeSvgIcon,
-      customOnPressed: customOnPressed,
-      changeIconColor: changeIconColor,
-      badge: badge,
-    );
-  }
+  const DwMenuItem.svg({
+    required this.route,
+    required this.displayTitle,
+    required this.svgIcon,
+    this.activeSvgIcon,
+    this.customOnPressed,
+    this.badge,
+    this.changeIconColor = true,
+  })  : iconData = null,
+        activeIconData = null;
 
   /// Create a custom menu item with no route (for custom actions)
-  factory DwMenuItem.custom({
-    required String displayTitle,
-    required IconData iconData,
-    required Function(WidgetRef) onPressed,
-    Widget? badge,
-  }) {
-    return DwMenuItem._(
-      route: null,
-      displayTitle: displayTitle,
-      iconData: iconData,
-      customOnPressed: onPressed,
-      changeIconColor: false,
-      badge: badge,
-    );
-  }
+  const DwMenuItem.custom({
+    required this.displayTitle,
+    required this.iconData,
+    required this.customOnPressed,
+    this.badge,
+  })  : route = null,
+        svgIcon = null,
+        activeSvgIcon = null,
+        activeIconData = null,
+        changeIconColor = false;
 
   final NavigationZoneRoute? route;
   final String displayTitle;

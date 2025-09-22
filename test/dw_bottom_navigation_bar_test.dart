@@ -3,6 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dartway_router/dartway_router.dart';
 
+// Helper function to create a simple test app
+Widget createTestApp(List<DwMenuItem> menuItems) {
+  return MaterialApp(
+    home: Scaffold(
+      body: const Center(child: Text('Test')),
+      bottomNavigationBar: DwBottomNavigationBar(
+        menuItems: menuItems,
+      ),
+    ),
+  );
+}
+
 void main() {
   group('DwBottomNavigationBar', () {
     testWidgets('should display correct number of items', (tester) async {
@@ -21,14 +33,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: const Center(child: Text('Test')),
-              bottomNavigationBar: DwBottomNavigationBar(
-                menuItems: menuItems,
-              ),
-            ),
-          ),
+          child: createTestApp(menuItems),
         ),
       );
 
@@ -44,18 +49,16 @@ void main() {
           displayTitle: 'Home',
           svgIcon: 'assets/home.svg',
         ),
+        DwMenuItem.icon(
+          route: TestRoutes.profile,
+          displayTitle: 'Profile',
+          iconData: Icons.person,
+        ),
       ];
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: const Center(child: Text('Test')),
-              bottomNavigationBar: DwBottomNavigationBar(
-                menuItems: menuItems,
-              ),
-            ),
-          ),
+          child: createTestApp(menuItems),
         ),
       );
 
@@ -68,20 +71,18 @@ void main() {
         DwMenuItem.custom(
           displayTitle: 'Custom',
           iconData: Icons.settings,
-          onPressed: (ref) {},
+          customOnPressed: (ref) {},
+        ),
+        DwMenuItem.icon(
+          route: TestRoutes.home,
+          displayTitle: 'Home',
+          iconData: Icons.home,
         ),
       ];
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: const Center(child: Text('Test')),
-              bottomNavigationBar: DwBottomNavigationBar(
-                menuItems: menuItems,
-              ),
-            ),
-          ),
+          child: createTestApp(menuItems),
         ),
       );
 
@@ -100,18 +101,16 @@ void main() {
             notificationProvider: messageCountProvider,
           ),
         ),
+        DwMenuItem.icon(
+          route: TestRoutes.profile,
+          displayTitle: 'Profile',
+          iconData: Icons.person,
+        ),
       ];
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: const Center(child: Text('Test')),
-              bottomNavigationBar: DwBottomNavigationBar(
-                menuItems: menuItems,
-              ),
-            ),
-          ),
+          child: createTestApp(menuItems),
         ),
       );
 
@@ -125,22 +124,20 @@ void main() {
         DwMenuItem.custom(
           displayTitle: 'Custom',
           iconData: Icons.settings,
-          onPressed: (ref) {
+          customOnPressed: (ref) {
             customPressed = true;
           },
+        ),
+        DwMenuItem.icon(
+          route: TestRoutes.home,
+          displayTitle: 'Home',
+          iconData: Icons.home,
         ),
       ];
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            home: Scaffold(
-              body: const Center(child: Text('Test')),
-              bottomNavigationBar: DwBottomNavigationBar(
-                menuItems: menuItems,
-              ),
-            ),
-          ),
+          child: createTestApp(menuItems),
         ),
       );
 
@@ -160,8 +157,17 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: Center(
-                child: NotificationBadge(
-                  notificationProvider: countProvider,
+                child: Stack(
+                  children: [
+                    Container(width: 50, height: 50, color: Colors.grey),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: NotificationBadge(
+                        notificationProvider: countProvider,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -180,8 +186,17 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: Center(
-                child: NotificationBadge(
-                  notificationProvider: countProvider,
+                child: Stack(
+                  children: [
+                    Container(width: 50, height: 50, color: Colors.grey),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: NotificationBadge(
+                        notificationProvider: countProvider,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -211,19 +226,33 @@ void main() {
 
       expect(find.text('1'), findsOneWidget);
 
-      // Update count
+      // Update count using a separate widget that handles the state change
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: Center(
-                child: Consumer(
-                  builder: (context, ref, child) {
-                    ref.read(countProvider.notifier).state = 5;
-                    return NotificationBadge(
-                      notificationProvider: countProvider,
-                    );
-                  },
+                child: Stack(
+                  children: [
+                    Container(width: 50, height: 50, color: Colors.grey),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          // Use a button to trigger the state change instead of doing it in build
+                          return ElevatedButton(
+                            onPressed: () {
+                              ref.read(countProvider.notifier).state = 5;
+                            },
+                            child: NotificationBadge(
+                              notificationProvider: countProvider,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -231,6 +260,8 @@ void main() {
         ),
       );
 
+      // Trigger the state change by tapping the button
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
       expect(find.text('5'), findsOneWidget);
@@ -244,10 +275,19 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: Center(
-                child: NotificationBadge(
-                  notificationProvider: countProvider,
-                  badgeColor: Colors.green,
-                  textColor: Colors.white,
+                child: Stack(
+                  children: [
+                    Container(width: 50, height: 50, color: Colors.grey),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: NotificationBadge(
+                        notificationProvider: countProvider,
+                        badgeColor: Colors.green,
+                        textColor: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -267,9 +307,18 @@ void main() {
           child: MaterialApp(
             home: Scaffold(
               body: Center(
-                child: NotificationBadge(
-                  notificationProvider: countProvider,
-                  minSize: 20.0,
+                child: Stack(
+                  children: [
+                    Container(width: 50, height: 50, color: Colors.grey),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: NotificationBadge(
+                        notificationProvider: countProvider,
+                        minSize: 20.0,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

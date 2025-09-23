@@ -1,8 +1,5 @@
+import 'package:dartway_router/dartway_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../ui/dw_menu_item.dart';
-import '../core/navigation_params/navigation_parameters_providers.dart';
-import '../core/navigation_params/navigation_params_mixin.dart';
 
 extension WidgetRefNavigationExtension on WidgetRef {
   T? watchNavigationParam<T>(NavigationParamsMixin<T> param) => param.get(

@@ -1,7 +1,5 @@
+import 'package:dartway_router/dartway_router.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import '../core/navigation_zones/navigation_zone_route.dart';
-import '../ui/dw_menu_item.dart';
 
 /// Navigation utilities for easier route management
 class DwNavigationUtils {

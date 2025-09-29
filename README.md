@@ -39,7 +39,7 @@ enum AppParams with NavigationParamsMixin<int> {
 
 final appRouterProvider = dwRouterStateProvider(
   DwRouter.config()
-    .addNavigationZones(AppNavigationZone.values)
+    .addNavigationZones([AppNavigationZone.values])
 );
 
 enum AppNavigationZone implements NavigationZoneRoute {
@@ -221,17 +221,17 @@ if (context.isCurrent(AppNavigationZone.home)) {
 
 ```dart
 final router = DwRouter.config()
-  .addNavigationZones(AppNavigationZone.values)
+  .addNavigationZones([AppNavigationZone.values])
   .setNotFoundPage(const NotFoundPage())
-  .setPageFactory(DwPageFactories.fade)
+  .setPageFactory(DwPageBuilders.fade)
   .build();
 
 // Or with Riverpod
 final appRouterProvider = dwRouterStateProvider(
   DwRouter.config()
-    .addNavigationZones(AppNavigationZone.values)
+    .addNavigationZones([AppNavigationZone.values])
     .setNotFoundPage(const NotFoundPage())
-    .setPageFactory(DwPageFactories.fade)
+    .setPageFactory(DwPageBuilders.fade)
 );
 ```
 
@@ -282,7 +282,7 @@ DwMenuItem.icon(
 ```dart
 // Use built-in transitions
 DwRouter.config()
-  .setPageFactory(DwPageFactories.slide)
+  .setPageFactory(DwPageBuilders.slide)
   .build();
 
 // Or create your own

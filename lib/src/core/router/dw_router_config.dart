@@ -16,8 +16,8 @@ class DwRouterConfig {
   Provider<RedirectsStateModel>? redirectsProvider;
 
   /// Add navigation zones
-  DwRouterConfig addNavigationZones(List<NavigationZoneRoute> zones) {
-    _navigationZones.add(zones);
+  DwRouterConfig addNavigationZones(List<List<NavigationZoneRoute>> zones) {
+    _navigationZones.addAll(zones);
     return this;
   }
 
@@ -73,9 +73,7 @@ class DwRouterConfig {
     final newConfig = DwRouter.config();
 
     // Copy all settings
-    for (final zone in _navigationZones) {
-      newConfig.addNavigationZones(zone);
-    }
+    newConfig.addNavigationZones(_navigationZones);
 
     if (_notFoundPageWidget != null) {
       newConfig.setNotFoundPage(_notFoundPageWidget!);

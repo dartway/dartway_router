@@ -6,7 +6,7 @@ void main() {
   group('DwRouter', () {
     test('should create router with valid navigation zones', () {
       expect(() {
-        DwRouter.config().addNavigationZones(TestRoutes.values).build();
+        DwRouter.config().addNavigationZones([TestRoutes.values]).build();
       }, returnsNormally);
     });
 
@@ -18,15 +18,14 @@ void main() {
 
     test('should throw error with empty zone in navigation zones', () {
       expect(() {
-        DwRouter.config().addNavigationZones([]).build();
+        DwRouter.config().addNavigationZones([[]]).build();
       }, throwsArgumentError);
     });
 
     test('should validate duplicate route paths', () {
       expect(() {
         DwRouter.config()
-            .addNavigationZones(DuplicateTestRoutes.values)
-            .build();
+            .addNavigationZones([DuplicateTestRoutes.values]).build();
       }, throwsArgumentError);
     });
 
@@ -48,7 +47,7 @@ void main() {
     test('should validate initial location format', () {
       expect(() {
         DwRouter.config()
-            .addNavigationZones(TestRoutes.values)
+            .addNavigationZones([TestRoutes.values])
             .setInitialLocation('invalid-location')
             .build();
       }, throwsArgumentError);
@@ -57,7 +56,7 @@ void main() {
     test('should validate initial location matches route', () {
       expect(() {
         DwRouter.config()
-            .addNavigationZones(TestRoutes.values)
+            .addNavigationZones([TestRoutes.values])
             .setInitialLocation('/nonexistent')
             .build();
       }, throwsArgumentError);
@@ -65,7 +64,7 @@ void main() {
 
     test('should build router with valid configuration', () {
       final router = DwRouter.config()
-          .addNavigationZones(TestRoutes.values)
+          .addNavigationZones([TestRoutes.values])
           .setNotFoundPage(const TestPage('Not Found'))
           .setInitialLocation('/home')
           .build();
@@ -75,7 +74,7 @@ void main() {
 
     test('should support builder pattern chaining', () {
       final config = DwRouter.config()
-          .addNavigationZones(TestRoutes.values)
+          .addNavigationZones([TestRoutes.values])
           .setNotFoundPage(const TestPage('Not Found'))
           .setInitialLocation('/home');
 

@@ -46,6 +46,22 @@ class DwRouter {
     DwRouter.skipZoneInRouteNames = skipZoneInRouteNames;
   }
 
+  static Provider<GoRouter> provider(DwRouterConfig config) {
+    return Provider<GoRouter>(
+      (ref) {
+        final redirects = config.redirectsProvider != null
+            ? ref.watch(config.redirectsProvider!)
+            : null;
+
+        final configWithRedirects = config.withRedirects(redirects);
+        return configWithRedirects.build();
+      },
+      dependencies: config.redirectsProvider != null
+          ? [config.redirectsProvider!]
+          : const [],
+    );
+  }
+
   /// Prepare a GoRouter instance with the given configuration
   ///
   /// This method creates and configures a GoRouter with validation and error handling.

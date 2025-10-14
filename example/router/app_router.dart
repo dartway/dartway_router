@@ -18,5 +18,5 @@ enum AppParams<T> with NavigationParamsMixin<T> {
   isEnabled<bool>(), // bool
 }
 
-final appRouterProvider = dwRouterStateProvider(
+final appRouterProvider = DwRouter.provider(
     DwRouter.config().addNavigationZones([AppNavigationZone.values]));

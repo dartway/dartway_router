@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../ui/page_transition/dw_page_builder.dart';
 
+import '../../ui/page_transition/dw_page_builder.dart';
 import '../navigation_params/navigation_parameters_providers.dart';
 import '../navigation_zones/navigation_zone_route.dart';
 import 'dw_router_config.dart';
@@ -215,7 +215,7 @@ class DwRouter {
     final routePaths = <String, List<NavigationZoneRoute>>{};
 
     for (final route in allRoutes) {
-      final path = route.routePath;
+      final path = route.fullPath;
       routePaths.putIfAbsent(path, () => []).add(route);
     }
 

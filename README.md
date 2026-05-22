@@ -322,42 +322,66 @@ final router = DwRouter<AppSession>(
 
 ### Shell Routes
 
-Shell routes allow you to wrap routes in a common UI shell, such as a scaffold with a bottom navigation bar.
+There are two kinds of shell routes. Choose based on whether you need tab state preserved.
+
+#### `statefulShellRouteBuilder` — tabs with preserved state (recommended for bottom nav)
+
+Each root route in the zone becomes an independent navigation branch. Scroll position,
+sub-routes, and widget state survive tab switches. The builder receives a
+`StatefulNavigationShell` that provides `currentIndex` and `goBranch` directly —
+no manual route-state lookups needed.
 
 ```dart
 enum AppRoutes implements DwNavigationRoute<AppSession> {
-  // ... routes ...
+  home(DwNavigationRouteDescriptor.zoneRoot(pageWidget: HomePage())),
+  profile(DwNavigationRouteDescriptor.simple(pageWidget: ProfilePage()));
+
+  // ... constructor, descriptor, zoneRoot, guards ...
 
   @override
-  DwShellRoutePageBuilder? get shellRouteBuilder =>
-      (context, state, child) {
-        final currentRoot = router.rootRouteFromState(state);
-        final currentIndex = currentRoot == AppRoutes.profile ? 1 : 0;
+  DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
-        return MaterialPage(
-          child: Scaffold(
-            body: child,
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    context.goNamed(AppRoutes.home.name);
-                    break;
-                  case 1:
-                    context.goNamed(AppRoutes.profile.name);
-                    break;
-                }
-              },
-              items: [
-                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-              ],
+  @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder =>
+      (context, state, navigationShell) => MaterialPage(
+        child: Scaffold(
+          body: navigationShell,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: (i) => navigationShell.goBranch(
+              i,
+              initialLocation: i == navigationShell.currentIndex,
             ),
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            ],
           ),
-        );
-      };
+        ),
+      );
 }
+```
+
+> Tapping the active tab navigates to its initial location (standard mobile UX)
+> because of `initialLocation: i == navigationShell.currentIndex`.
+
+#### `shellRouteBuilder` — simple shell (state not preserved)
+
+Use when you only need a persistent UI wrapper and don't care about preserving
+tab state (e.g., a sidebar layout without nested navigation).
+
+```dart
+@override
+DwShellRoutePageBuilder? get shellRouteBuilder =>
+    (context, state, child) => MaterialPage(
+      child: Scaffold(
+        body: child,
+        bottomNavigationBar: MySimpleBottomNav(),
+      ),
+    );
+
+@override
+DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
 ```
 
 ### Type-Safe Parameters
@@ -550,9 +574,20 @@ final router = DwRouter<AppSession>(
     redirectLimit: 10,
     errorBuilder: (context, state) => ErrorPage(),
     redirect: (context, state) {
-      // Custom redirect logic
-      return null;
+      return null; // custom global redirect
     },
+
+    // Intercept navigation before route matching (go_router v14+)
+    onEnter: (context, current, next, router) {
+      analytics.track(next.uri.path);
+      return Allow(); // or Block.stop() / Block.then(callback)
+    },
+
+    // Case-insensitive URL matching (default: true = case-sensitive)
+    caseSensitive: false,
+
+    // Suppress root navigator observer callbacks inside shell zones
+    shellNotifyRootObserver: false,
   ),
 );
 ```
@@ -583,6 +618,8 @@ Abstract interface for navigation routes. Routes are defined as enums implementi
 **Required Properties:**
 - `descriptor` - Route descriptor defining path and page
 - `zoneRoot` - Root path segment for the navigation zone
+- `shellRouteBuilder` - Simple shell builder (state not preserved across tabs)
+- `statefulShellRouteBuilder` - Stateful shell builder (state preserved per branch)
 - `shellRouteBuilder` - Optional shell route builder
 - `zoneGuards` - List of navigation guards
 

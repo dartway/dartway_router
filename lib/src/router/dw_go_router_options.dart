@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+
 /// Runtime configuration options for the underlying [GoRouter].
 ///
 /// These options are passed through to [GoRouter] when [DwRouter] builds
@@ -30,6 +31,9 @@ class DwGoRouterOptions {
     this.observers,
     this.onException,
     this.extraCodec,
+    this.onEnter,
+    this.caseSensitive = true,
+    this.shellNotifyRootObserver = true,
   });
 
   /// Optional [GlobalKey] for the root navigator.
@@ -80,4 +84,38 @@ class DwGoRouterOptions {
 
   /// Optional codec for encoding/decoding [extra] state in the location.
   final Codec<Object?, Object?>? extraCodec;
+
+  /// Intercepts every navigation event before routes are matched.
+  ///
+  /// Called with the current and next [GoRouterState]. Return [Allow] to
+  /// proceed, [Block.stop()] to cancel, or [Block.then(callback)] to cancel
+  /// and run a follow-up action (e.g. redirect).
+  ///
+  /// Executes before [redirect] and [zoneGuards]. Unlike [redirect], it can
+  /// also block navigations that would normally not trigger a redirect.
+  ///
+  /// Example:
+  /// ```dart
+  /// options: DwGoRouterOptions(
+  ///   onEnter: (context, current, next, router) {
+  ///     analytics.track(next.uri.path);
+  ///     return Allow();
+  ///   },
+  /// )
+  /// ```
+  final OnEnter? onEnter;
+
+  /// Whether route paths are matched case-sensitively (default `true`).
+  ///
+  /// When `false`, `/Profile` and `/profile` resolve to the same route.
+  /// Applies to all routes built by [DwRouter].
+  final bool caseSensitive;
+
+  /// Whether shell routes notify the root navigator observer on inner
+  /// navigations (default `true`).
+  ///
+  /// Applies to both [ShellRoute] and [StatefulShellRoute] zones.
+  /// Set to `false` to suppress root-observer callbacks when the user
+  /// navigates within a tab.
+  final bool shellNotifyRootObserver;
 }

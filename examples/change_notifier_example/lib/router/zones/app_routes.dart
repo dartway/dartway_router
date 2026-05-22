@@ -21,34 +21,22 @@ enum AppRoutes implements DwNavigationRoute<AppSession> {
   String get zoneRoot => '';
 
   @override
-  List<DwNavigationGuard<AppSession>> get zoneGuards => [
-    (appSession) => !appSession.isLoggedIn ? AuthRoutes.auth.fullPath : null,
-  ];
+  DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
-  DwShellRoutePageBuilder? get shellRouteBuilder =>
-      (BuildContext context, GoRouterState state, Widget child) {
-        final currentRootRoute = appRouter.rootRouteFromState(state);
-
-        final currentIndex = currentRootRoute == AppRoutes.profile ? 1 : 0;
-
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder =>
+      (BuildContext context, GoRouterState state, StatefulNavigationShell navigationShell) {
         return DwPageBuilder.fade(
           context,
           state.pageKey,
           Scaffold(
-            body: child,
+            body: navigationShell,
             bottomNavigationBar: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) {
-                switch (index) {
-                  case 0:
-                    context.goNamed(AppRoutes.catalog.name);
-                    break;
-                  case 1:
-                    context.goNamed(AppRoutes.profile.name);
-                    break;
-                }
-              },
+              currentIndex: navigationShell.currentIndex,
+              onTap: (i) => navigationShell.goBranch(
+                i,
+                initialLocation: i == navigationShell.currentIndex,
+              ),
               items: const [
                 BottomNavigationBarItem(
                   icon: Icon(Icons.list),
@@ -63,4 +51,9 @@ enum AppRoutes implements DwNavigationRoute<AppSession> {
           ),
         );
       };
+
+  @override
+  List<DwNavigationGuard<AppSession>> get zoneGuards => [
+    (appSession) => !appSession.isLoggedIn ? AuthRoutes.auth.fullPath : null,
+  ];
 }

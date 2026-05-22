@@ -15,6 +15,9 @@ enum AuthRoutes implements DwNavigationRoute<RouterRefreshNotifier> {
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
+
+  @override
   List<DwNavigationGuard<RouterRefreshNotifier>> get zoneGuards => [
     (notifier) => notifier.isLoggedIn ? AppRoutes.catalog.fullPath : null,
   ];

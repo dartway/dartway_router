@@ -164,6 +164,7 @@ class DwRouter<RouterState extends Listenable> {
       observers: options.observers,
       onException: options.onException,
       extraCodec: options.extraCodec,
+      onEnter: options.onEnter,
       redirect: (context, state) {
         // First, check zone guards
         final targetRoute = topRouteFromState(state);
@@ -210,18 +211,32 @@ class DwRouter<RouterState extends Listenable> {
               )
               .toList();
 
-          // If zone has no shell builder, return routes directly
-          if (zone.first.shellRouteBuilder == null) {
-            return rootRoutes;
+          // StatefulShellRoute: each root route becomes an independent branch,
+          // preserving its navigation stack across tab switches.
+          if (zone.first.statefulShellRouteBuilder != null) {
+            return <RouteBase>[
+              StatefulShellRoute.indexedStack(
+                pageBuilder: zone.first.statefulShellRouteBuilder!,
+                notifyRootObserver: options.shellNotifyRootObserver,
+                branches: rootRoutes
+                    .map((r) => StatefulShellBranch(routes: <RouteBase>[r]))
+                    .toList(),
+              ),
+            ];
           }
 
-          // Wrap routes in a ShellRoute if shell builder is configured
-          return <RouteBase>[
-            ShellRoute(
-              pageBuilder: zone.first.shellRouteBuilder!,
-              routes: rootRoutes,
-            ),
-          ];
+          // ShellRoute: simple shell wrapper (state not preserved across tabs).
+          if (zone.first.shellRouteBuilder != null) {
+            return <RouteBase>[
+              ShellRoute(
+                pageBuilder: zone.first.shellRouteBuilder!,
+                notifyRootObserver: options.shellNotifyRootObserver,
+                routes: rootRoutes,
+              ),
+            ];
+          }
+
+          return rootRoutes;
         })
         .expand((e) => e)
         .toList();
@@ -241,6 +256,7 @@ class DwRouter<RouterState extends Listenable> {
     return GoRoute(
       name: route.name,
       path: route.routePath,
+      caseSensitive: options.caseSensitive,
       pageBuilder: (context, state) {
         // Use the centralized page builder with a unique key
         return pageBuilder(

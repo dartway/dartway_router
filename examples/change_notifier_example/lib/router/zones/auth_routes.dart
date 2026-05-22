@@ -15,6 +15,9 @@ enum AuthRoutes implements DwNavigationRoute<AppSession> {
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
+
+  @override
   List<DwNavigationGuard<AppSession>> get zoneGuards => [
     (appSession) => appSession.isLoggedIn ? AppRoutes.catalog.fullPath : null,
   ];

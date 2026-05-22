@@ -33,13 +33,13 @@ typedef DwNavigationGuard<RouterState extends Listenable> = String? Function(
 ///
 /// A shell route builder wraps child routes in a common UI shell, such as
 /// a scaffold with a bottom navigation bar, sidebar, or persistent header.
+/// Navigation state is **not** preserved when switching tabs — the page
+/// is rebuilt each time. For state-preserving tabs use [DwStatefulShellRouteBuilder].
 ///
 /// The builder receives:
 /// - [context] - The build context
 /// - [state] - The current GoRouter state
 /// - [child] - The child widget (the actual route content)
-///
-/// It should return a [Page] that wraps the child in the desired shell UI.
 ///
 /// Example:
 /// ```dart
@@ -57,4 +57,46 @@ typedef DwShellRoutePageBuilder = Page<dynamic> Function(
   BuildContext context,
   GoRouterState state,
   Widget child,
+);
+
+/// Type definition for stateful shell route page builders.
+///
+/// Used with [DwNavigationRoute.statefulShellRouteBuilder] to create a
+/// [StatefulShellRoute] where each root route of the zone is an independent
+/// navigation branch. Each branch keeps its own navigator stack, so navigation
+/// state is **preserved** when the user switches tabs.
+///
+/// Unlike [DwShellRoutePageBuilder], the builder receives a
+/// [StatefulNavigationShell] instead of a plain [Widget] child:
+/// - [StatefulNavigationShell.currentIndex] — index of the active branch
+/// - [StatefulNavigationShell.goBranch] — switch to a branch by index
+/// - The shell itself is the body widget
+///
+/// Example:
+/// ```dart
+/// @override
+/// DwStatefulShellRouteBuilder? get statefulShellRouteBuilder =>
+///     (context, state, navigationShell) {
+///       return MaterialPage(
+///         child: Scaffold(
+///           body: navigationShell,
+///           bottomNavigationBar: BottomNavigationBar(
+///             currentIndex: navigationShell.currentIndex,
+///             onTap: (i) => navigationShell.goBranch(
+///               i,
+///               initialLocation: i == navigationShell.currentIndex,
+///             ),
+///             items: const [
+///               BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+///               BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+///             ],
+///           ),
+///         ),
+///       );
+///     };
+/// ```
+typedef DwStatefulShellRouteBuilder = Page<dynamic> Function(
+  BuildContext context,
+  GoRouterState state,
+  StatefulNavigationShell navigationShell,
 );

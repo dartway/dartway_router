@@ -50,6 +50,9 @@ enum RoutesWithGuards implements DwNavigationRoute<TestRouterState> {
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
+
+  @override
   List<DwNavigationGuard<TestRouterState>> get zoneGuards => [
         (state) => null,
       ];
@@ -77,6 +80,9 @@ enum NestedRoutes implements DwNavigationRoute<TestRouterState> {
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
+
+  @override
   List<DwNavigationGuard<TestRouterState>> get zoneGuards => [];
 }
 
@@ -99,6 +105,9 @@ enum TestRoutes implements DwNavigationRoute<TestRouterState> {
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
 
   @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
+
+  @override
   List<DwNavigationGuard<TestRouterState>> get zoneGuards => [];
 }
 
@@ -117,6 +126,9 @@ enum AuthRoutes implements DwNavigationRoute<TestRouterState> {
 
   @override
   DwShellRoutePageBuilder? get shellRouteBuilder => null;
+
+  @override
+  DwStatefulShellRouteBuilder? get statefulShellRouteBuilder => null;
 
   @override
   List<DwNavigationGuard<TestRouterState>> get zoneGuards => [];

@@ -1,9 +1,17 @@
 name: DCO Check
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
-  check:
+  dco:
     runs-on: ubuntu-latest
     steps:
-      - uses: tisonkun/actions-dco@v1.1
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check DCO
+        uses: tisonkun/actions-dco@v1

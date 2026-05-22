@@ -1,6 +1,22 @@
-## 0.0.1
+## 1.1.0 - 2026-05-22
 
-* Initial release of dartway_router package
-* Refactored from nit_router to dartway_router
-* Renamed all classes from Nit* to Dw* prefix
-* Updated package references and naming conventions
+### Changed
+- Bump `go_router` constraint to `^17.2.3`
+- Bump `flutter_lints` to `^6.0.0`
+
+### Fixed
+- `DwPageBuilder.slide`: the `from` parameter now correctly describes the entry
+  direction — `from: AxisDirection.right` slides the page in from the right edge
+  (was entering from the left)
+
+---
+
+## 1.0.1 - 1.0.2
+
+Updated readme, examples and pubspec.yaml for better pub.dev representation.
+
+---
+
+## 1.0.0
+
+Initial public release.

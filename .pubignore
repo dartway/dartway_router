@@ -1,0 +1,8 @@
+# Build artifacts
+build/
+coverage/
+.dart_tool/
+
+# Full runnable examples live in the GitHub repo; only example/main.dart is
+# included in the published package as a code snippet.
+examples/

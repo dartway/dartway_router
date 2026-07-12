@@ -1,3 +1,17 @@
+## 1.1.1 - 2026-07-12
+
+### Fixed
+
+Pushing the same route twice no longer crashes the Navigator.
+
+Page keys were derived from the route name and path
+(`ValueKey('$name-$path')`), so two entries for the same location on the stack
+shared a key and tripped the Navigator's `_debugCheckDuplicatedPageKeys`
+assertion. Pages now use go_router's own `state.pageKey`, which is unique per
+stack entry (a fresh key for every imperative push, preserved across rebuilds).
+
+Covered by a regression test: pushing `profile` twice must not throw.
+
 ## 1.1.0 - 2026-05-22
 
 ### ⚠️ Breaking Change
